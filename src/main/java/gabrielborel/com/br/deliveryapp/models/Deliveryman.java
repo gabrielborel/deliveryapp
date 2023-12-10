@@ -1,20 +1,36 @@
 package gabrielborel.com.br.deliveryapp.models;
 
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+@Entity
 public class Deliveryman {
-    private String id;
+    @Id
+    @GeneratedValue
+    private int id;
+
+    @Column
     private String name;
+
+    @Column
     private String email;
+
+    @Column
     private String phoneNumber;
+
+    @Column
     private String identification;
+
+    @Column
     private String vehicleLicensePlate;
+
+    @Column
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "deliveryman")
     private List<DeliveryOrder> deliveryOrders = new ArrayList<>();
 
     public Deliveryman(String name, String email, String phoneNumber, String identification, String vehicleLicensePlate) {
-        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.identification = identification;
         this.vehicleLicensePlate = vehicleLicensePlate;
@@ -22,19 +38,16 @@ public class Deliveryman {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getId() {
-        return id;
-    }
+    public Deliveryman() {}
 
     @Override
     public String toString() {
-        return "Deliveryman{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", identification='" + identification + '\'' +
-                ", vehicleLicensePlate='" + vehicleLicensePlate + '\'' +
+        return "Entregador {" +
+                "nome='" + name + '\'' +
+                ", CPF='" + identification + '\'' +
+                ", Placa do veículo='" + vehicleLicensePlate + '\'' +
                 ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
+                ", telefone='" + phoneNumber + '\'' +
                 '}';
     }
 }

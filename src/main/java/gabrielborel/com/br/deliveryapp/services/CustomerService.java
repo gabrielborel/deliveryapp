@@ -1,21 +1,30 @@
 package gabrielborel.com.br.deliveryapp.services;
 
 import gabrielborel.com.br.deliveryapp.models.Customer;
+import gabrielborel.com.br.deliveryapp.repositories.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class CustomerService {
-    private final Map<String, Customer> customers = new HashMap<>();
+    private final CustomerRepository customerRepository;
 
-    public void createCustomer(Customer customer) {
-        customers.put(customer.getId(), customer);
+    @Autowired
+    public CustomerService(CustomerRepository customerRepository){
+        this.customerRepository = customerRepository;
     }
 
-    public Collection<Customer> getCustomers() {
-        return customers.values();
+    public void createCustomer(Customer customer) {
+        this.customerRepository.save(customer);
+    }
+
+    public List<Customer> getCustomers() {
+        List<Customer> customers = new ArrayList<>();
+        this.customerRepository.findAll().forEach(customers::add);
+        return customers;
     }
 }

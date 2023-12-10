@@ -1,21 +1,28 @@
 package gabrielborel.com.br.deliveryapp.services;
 
 import gabrielborel.com.br.deliveryapp.models.Seller;
+import gabrielborel.com.br.deliveryapp.repositories.SellerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SellerService {
-    private final Map<String, Seller> sellers = new HashMap<>();
+    private final SellerRepository sellerRepository;
 
-    public void createSeller(Seller seller) {
-        sellers.put(seller.getId(), seller);
+    @Autowired
+    public SellerService(SellerRepository sellerRepository) {
+        this.sellerRepository = sellerRepository;
     }
 
-    public Collection<Seller> getSellers() {
-        return sellers.values();
+    public void createSeller(Seller seller) {
+        this.sellerRepository.save(seller);
+    }
+
+    public List<Seller> getSellers() {
+        List<Seller> sellers = new ArrayList<>();
+        this.sellerRepository.findAll().forEach(sellers::add);
+        return sellers;
     }
 }

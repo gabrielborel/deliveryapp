@@ -1,20 +1,40 @@
 package gabrielborel.com.br.deliveryapp.models;
 
-import java.time.LocalDate;
-import java.util.UUID;
+import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
+@Entity
 public class DeliveryOrder {
-    private String id;
+    @Id
+    @GeneratedValue
+    private int id;
+
+    @ManyToOne
     private Seller seller;
+
+    @ManyToOne
     private Customer customer;
+
+    @ManyToOne
     private Deliveryman deliveryman;
+
+    @Column
     private DeliveryOrderStatus status;
+
+    @Column
     private LocalDate createdAt;
+
+    @Column
+    private LocalDate canceledAt;
+
+    @Column
     private LocalDate deliveredAt;
+
+    @Column
     private Boolean isFinished;
 
     public DeliveryOrder(Seller seller, Customer customer, Deliveryman deliveryman) {
-        this.id = UUID.randomUUID().toString();
         this.seller = seller;
         this.customer = customer;
         this.deliveryman = deliveryman;
@@ -23,21 +43,19 @@ public class DeliveryOrder {
         this.isFinished = false;
     }
 
-    public String getId() {
-        return id;
-    }
+    public DeliveryOrder() {}
 
     @Override
     public String toString() {
-        return "DeliveryOrder{" +
-                "id='" + id + '\'' +
-                ", seller=" + seller +
-                ", customer=" + customer +
-                ", deliveryman=" + deliveryman +
+        return "Pedido de Entrega {" +
+                "vendedor=" + seller +
+                ", cliente=" + customer +
+                ", entregador=" + deliveryman +
                 ", status=" + status +
-                ", createdAt=" + createdAt +
-                ", deliveredAt=" + deliveredAt +
-                ", isFinished=" + isFinished +
+                ", criada em=" + createdAt +
+                ", entregue em=" + deliveredAt +
+                ", cancelada em=" + canceledAt +
+                ", está finalizada=" + isFinished +
                 '}';
     }
 }

@@ -1,21 +1,29 @@
 package gabrielborel.com.br.deliveryapp.services;
 
 import gabrielborel.com.br.deliveryapp.models.Deliveryman;
+import gabrielborel.com.br.deliveryapp.repositories.DeliverymanRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DeliverymanService {
-    private final Map<String, Deliveryman> deliverymen = new HashMap<>();
+    private final DeliverymanRepository deliverymanRepository;
 
-    public void createDeliveryman(Deliveryman deliveryman) {
-        deliverymen.put(deliveryman.getId(), deliveryman);
+    @Autowired
+    public DeliverymanService(DeliverymanRepository deliverymanRepository) {
+        this.deliverymanRepository = deliverymanRepository;
     }
 
-    public Collection<Deliveryman> getDeliverymen() {
-        return deliverymen.values();
+    public void createDeliveryman(Deliveryman deliveryman) {
+        this.deliverymanRepository.save(deliveryman);
+    }
+
+    public List<Deliveryman> getDeliverymen()
+    {
+        List<Deliveryman> deliverymen = new ArrayList<>();
+        this.deliverymanRepository.findAll().forEach(deliverymen::add);
+        return deliverymen;
     }
 }

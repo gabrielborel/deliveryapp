@@ -1,5 +1,8 @@
 package gabrielborel.com.br.deliveryapp.models;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Address {
     private String street;
     private String number;
@@ -17,15 +20,17 @@ public class Address {
         this.zipCode = zipCode;
     }
 
+    public Address() {}
+
     @Override
     public String toString() {
-        return "Address{" +
-                "street='" + street + '\'' +
-                ", number='" + number + '\'' +
-                ", neighborhood='" + neighborhood + '\'' +
-                ", city='" + city + '\'' +
-                ", state='" + state + '\'' +
-                ", zipCode='" + zipCode + '\'' +
+        return "Endereço {" +
+                "rua='" + street + '\'' +
+                ", número='" + number + '\'' +
+                ", bairro='" + neighborhood + '\'' +
+                ", cidade='" + city + '\'' +
+                ", UF='" + state + '\'' +
+                ", CEP='" + zipCode + '\'' +
                 '}';
     }
 }

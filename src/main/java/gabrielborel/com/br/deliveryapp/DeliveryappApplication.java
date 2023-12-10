@@ -26,16 +26,16 @@ public class DeliveryappApplication {
 		var sellerService = ctx.getBean(SellerService.class);
 		var deliveryOrderService = ctx.getBean(DeliveryOrderService.class);
 
-		System.out.println("\nCustomers:");
+		System.out.println("\nClientes:");
 		customerService.getCustomers().forEach(System.out::println);
 
-		System.out.println("\nDeliverymen:");
+		System.out.println("\nEntregadores:");
 		deliverymanService.getDeliverymen().forEach(System.out::println);
 
-		System.out.println("\nSellers:");
+		System.out.println("\nVendedores:");
 		sellerService.getSellers().forEach(System.out::println);
 
-		System.out.println("\nDelivery Orders:");
+		System.out.println("\nPedidos de Entrega:");
 		deliveryOrderService.getDeliveryOrders().forEach(System.out::println);
 	}
 }
