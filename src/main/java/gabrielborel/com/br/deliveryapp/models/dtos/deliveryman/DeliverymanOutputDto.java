@@ -39,4 +39,16 @@ public class DeliverymanOutputDto {
         deliverymen.forEach(deliveryman -> deliverymenDto.add(fromModel(deliveryman)));
         return deliverymenDto;
     }
+
+    @Override
+    public String toString() {
+        return "Entregador {" +
+                "id=" + id +
+                "nome='" + name + '\'' +
+                ", CPF='" + identification + '\'' +
+                ", Placa do veículo='" + vehicleLicensePlate + '\'' +
+                ", email='" + email + '\'' +
+                ", telefone='" + phoneNumber + '\'' +
+                '}';
+    }
 }

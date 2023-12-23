@@ -5,6 +5,7 @@ import gabrielborel.com.br.deliveryapp.models.Deliveryman;
 import gabrielborel.com.br.deliveryapp.models.dtos.deliveryman.CreateDeliverymanInputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.deliveryman.DeliverymanOutputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.deliveryman.UpdateDeliverymanInputDto;
+import gabrielborel.com.br.deliveryapp.models.dtos.deliveryorder.DeliveryOrderOutputDto;
 import gabrielborel.com.br.deliveryapp.repositories.DeliverymanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class DeliverymanService {
     private final DeliverymanRepository deliverymanRepository;
 
     @Autowired
-    public DeliverymanService(DeliverymanRepository deliverymanRepository){
+    public DeliverymanService(DeliverymanRepository deliverymanRepository) {
         this.deliverymanRepository = deliverymanRepository;
     }
 
@@ -53,6 +54,11 @@ public class DeliverymanService {
 
         deliverymanRepository.save(deliveryman);
         return DeliverymanOutputDto.fromModel(deliveryman);
+    }
+
+    public List<DeliveryOrderOutputDto> getDeliverymanDeliveryOrders(int id) {
+        var deliveryman = deliverymanRepository.findById(id).orElseThrow(() -> new NoSuchElementException("deliveryman not found"));
+        return DeliveryOrderOutputDto.fromModelList(deliveryman.getDeliveryOrders());
     }
 
     private void updateIfNotNull(String newValue, Consumer<String> updater) {

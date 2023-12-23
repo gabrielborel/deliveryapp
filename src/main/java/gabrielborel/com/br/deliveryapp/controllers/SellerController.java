@@ -8,8 +8,11 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -29,14 +32,19 @@ public class SellerController {
     public ResponseEntity<SellerOutputDto> createSeller(@RequestBody @Valid CreateSellerHttpRequestBodyDto body) throws JsonProcessingException {
         var createSellerDto = CreateSellerInputDto.fromRequestBody(body);
         var seller = sellerService.createSeller(createSellerDto);
-        return new ResponseEntity<>(seller, HttpStatus.CREATED);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(seller.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(seller);
     }
 
     @GetMapping("/seller")
     @ResponseBody
     public ResponseEntity<List<SellerOutputDto>> getSellers() {
         var sellers = sellerService.getSellers();
-        return new ResponseEntity<>(sellers, HttpStatus.OK);
+        return ResponseEntity.ok(sellers);
     }
 
     @GetMapping("/seller/{id}")
@@ -44,9 +52,11 @@ public class SellerController {
     public ResponseEntity<?> getSeller(@PathVariable int id) {
         try {
             var seller = sellerService.getSellerById(id);
-            return new ResponseEntity<>(seller, HttpStatus.OK);
-        } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("seller not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(seller);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -55,21 +65,40 @@ public class SellerController {
     public ResponseEntity<?> deleteSeller(@PathVariable int id) {
         try {
             sellerService.deleteSellerById(id);
-            return new ResponseEntity<>("seller deleted", HttpStatus.OK);
-        } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("seller not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.noContent().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @PutMapping("/seller/{id}")
     @ResponseBody
-    public ResponseEntity<?> updateSeller(@PathVariable int id, @RequestBody UpdateSellerHttpRequestBodyDto body) throws JsonProcessingException {
+    public ResponseEntity<?> updateSeller(@PathVariable int id, @RequestBody UpdateSellerHttpRequestBodyDto body, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) {
+                return ResponseEntity.badRequest().body(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            }
+
             var updateSellerDto = UpdateSellerInputDto.fromRequestBody(body);
-                var seller = sellerService.updateSeller(id, updateSellerDto);
+            var seller = sellerService.updateSeller(id, updateSellerDto);
             return new ResponseEntity<>(seller, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/seller/{id}/delivery-orders")
+    @ResponseBody
+    public ResponseEntity<?> getSellerDeliveryOrders(@PathVariable int id) {
+        try {
+            var deliveryOrders = sellerService.getSellerDeliveryOrders(id);
+            return ResponseEntity.ok(deliveryOrders);
         } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("seller not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

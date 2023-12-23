@@ -38,4 +38,16 @@ public class SellerOutputDto {
         sellers.forEach(seller -> sellersDto.add(fromModel(seller)));
         return sellersDto;
     }
+
+    @Override
+    public String toString() {
+        return "Vendedor {" +
+                "nome='" + name + '\'' +
+                ", CPF/CNPJ='" + identification + '\'' +
+                ", endereço da loja=" + address +
+                ", email='" + email + '\'' +
+                ", telefone='" + phoneNumber + '\'' +
+                '}';
+    }
+
 }

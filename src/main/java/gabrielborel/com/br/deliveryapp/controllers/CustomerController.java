@@ -8,10 +8,13 @@ import gabrielborel.com.br.deliveryapp.models.dtos.customer.UpdateCustomerInputD
 import gabrielborel.com.br.deliveryapp.models.dtos.seller.UpdateSellerHttpRequestBodyDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.seller.UpdateSellerInputDto;
 import gabrielborel.com.br.deliveryapp.services.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
@@ -28,7 +31,11 @@ public class CustomerController {
 
     @PostMapping("/customer")
     @ResponseBody
-    public ResponseEntity<?> createCustomer(@RequestBody CreateCustomerHttpRequestBodyDto body) throws JsonProcessingException {
+    public ResponseEntity<?> createCustomer(@RequestBody @Valid CreateCustomerHttpRequestBodyDto body, BindingResult bindingResult) throws JsonProcessingException {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+        }
+
         var createCustomerDto = CreateCustomerInputDto.fromRequestBody(body);
         var customer = customerService.createCustomer(createCustomerDto);
         return new ResponseEntity<>(customer, HttpStatus.CREATED);
@@ -38,7 +45,7 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity<?> getCustomers() {
         var customers = customerService.getCustomers();
-        return new ResponseEntity<>(customers, HttpStatus.OK);
+        return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/customer/{id}")
@@ -46,9 +53,9 @@ public class CustomerController {
     public ResponseEntity<?> getCustomer(@PathVariable int id) {
         try {
             var customer = customerService.getCustomerById(id);
-            return new ResponseEntity<>(customer, HttpStatus.OK);
+            return ResponseEntity.ok(customer);
         } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("customer not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -59,7 +66,7 @@ public class CustomerController {
             customerService.deleteCustomerById(id);
             return new ResponseEntity<>("customer deleted", HttpStatus.OK);
         } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("customer not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -71,7 +78,18 @@ public class CustomerController {
             var customer = customerService.updateCustomer(id, updateCustomerInput);
             return new ResponseEntity<>(customer, HttpStatus.OK);
         } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("customer not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/customer/{id}/delivery-orders")
+    @ResponseBody
+    public ResponseEntity<?> getCustomerDeliveryOrders(@PathVariable int id) {
+        try {
+            var deliveryOrders = customerService.getCustomerDeliveryOrders(id);
+            return ResponseEntity.ok(deliveryOrders);
+        } catch(NoSuchElementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

@@ -41,4 +41,20 @@ public class DeliveryOrderOutputDto {
         deliveryOrders.forEach(deliveryOrder -> deliveryOrdersDto.add(fromModel(deliveryOrder)));
         return deliveryOrdersDto;
     }
+
+
+    @Override
+    public String toString() {
+        return "Pedido de Entrega {" +
+                "id=" + id +
+                "vendedor=" + seller +
+                ", cliente=" + customer +
+                ", entregador=" + deliveryman +
+                ", status=" + status +
+                ", criada em=" + createdAt +
+                ", entregue em=" + deliveredAt +
+                ", cancelada em=" + canceledAt +
+                ", está finalizada=" + isFinished +
+                '}';
+    }
 }

@@ -44,7 +44,8 @@ public class DeliveryOrderLoader {
                     customer.getId(),
                     deliveryman.getId()
             );
-            deliveryOrderService.createDeliveryOrder(deliveryOrderInput);
+            var t = deliveryOrderService.createDeliveryOrder(deliveryOrderInput);
+            System.out.println(t);
         }
     }
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
@@ -27,7 +28,11 @@ public class DeliverymanController {
 
     @PostMapping("/deliveryman")
     @ResponseBody
-    public ResponseEntity<?> createDeliveryman(@RequestBody @Valid CreateDeliverymanHttpRequestBodyDto body) throws JsonProcessingException {
+    public ResponseEntity<?> createDeliveryman(@RequestBody @Valid CreateDeliverymanHttpRequestBodyDto body, BindingResult bindingResult) throws JsonProcessingException {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+        }
+
         var createDeliverymanDto = CreateDeliverymanInputDto.fromRequestBody(body);
         var deliveryman = deliverymanService.createDeliveryman(createDeliverymanDto);
         return new ResponseEntity<>(deliveryman, HttpStatus.CREATED);
@@ -37,7 +42,7 @@ public class DeliverymanController {
     @ResponseBody
     public ResponseEntity<?> getDeliverymans() {
         var deliverymen = deliverymanService.getDeliverymen();
-        return new ResponseEntity<>(deliverymen, HttpStatus.OK);
+        return ResponseEntity.ok(deliverymen);
     }
 
     @GetMapping("/deliveryman/{id}")
@@ -47,7 +52,7 @@ public class DeliverymanController {
             var deliveryman = deliverymanService.getDeliverymanById(id);
             return new ResponseEntity<>(deliveryman, HttpStatus.OK);
         } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("deliveryman not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -58,7 +63,7 @@ public class DeliverymanController {
             deliverymanService.deleteDeliverymanById(id);
             return new ResponseEntity<>("deliveryman deleted", HttpStatus.OK);
         } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("deliveryman not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -70,7 +75,18 @@ public class DeliverymanController {
             var deliveryman = deliverymanService.updateDeliveryman(id, updateDeliverymanInput);
             return new ResponseEntity<>(deliveryman, HttpStatus.OK);
         } catch(NoSuchElementException e) {
-            return new ResponseEntity<>("deliveryman not found",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/deliveryman/{id}/delivery-orders")
+    @ResponseBody
+    public ResponseEntity<?> getDeliverymanDeliveryOrders(@PathVariable int id) {
+        try {
+            var deliveryOrders = deliverymanService.getDeliverymanDeliveryOrders(id);
+            return ResponseEntity.ok(deliveryOrders);
+        } catch(NoSuchElementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

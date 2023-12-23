@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class DeliveryOrderService {
@@ -34,11 +35,45 @@ public class DeliveryOrderService {
         var deliveryman = Deliveryman.fromOutputDto(this.deliverymanService.getDeliverymanById(deliveryOrderInput.getDeliverymanId()));
 
         var deliveryOrder = new DeliveryOrder(seller, customer, deliveryman);
+        seller.addDeliveryOrder(deliveryOrder);
+        customer.addDeliveryOrder(deliveryOrder);
+        deliveryman.addDeliveryOrder(deliveryOrder);
+
         this.deliveryOrderRepository.save(deliveryOrder);
         return DeliveryOrderOutputDto.fromModel(deliveryOrder);
     }
 
     public List<DeliveryOrderOutputDto> getDeliveryOrders() {
         return DeliveryOrderOutputDto.fromModelList(this.deliveryOrderRepository.findAll());
+    }
+
+    public DeliveryOrderOutputDto getDeliveryOrderById(int id) {
+        return DeliveryOrderOutputDto.fromModel(this.deliveryOrderRepository.findById(id).orElseThrow(() -> new NoSuchElementException("delivery order not found")));
+    }
+
+    public void deleteDeliveryOrderById(int id) {
+        var deliveryOrder = this.deliveryOrderRepository.findById(id).orElseThrow(() -> new NoSuchElementException("delivery order not found"));
+        this.deliveryOrderRepository.delete(deliveryOrder);
+    }
+
+    public DeliveryOrderOutputDto startDeliveryOrder(int id) {
+        var deliveryOrder = this.deliveryOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("delivery order not found"));
+        deliveryOrder.startDelivery();
+        this.deliveryOrderRepository.save(deliveryOrder);
+        return DeliveryOrderOutputDto.fromModel(deliveryOrder);
+    }
+
+    public DeliveryOrderOutputDto cancelDeliveryOrder(int id) {
+        var deliveryOrder = this.deliveryOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("delivery order not found"));
+        deliveryOrder.cancelDelivery();
+        this.deliveryOrderRepository.save(deliveryOrder);
+        return DeliveryOrderOutputDto.fromModel(deliveryOrder);
+    }
+
+    public DeliveryOrderOutputDto completeDeliveryOrder(int id) {
+        var deliveryOrder = this.deliveryOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("delivery order not found"));
+        deliveryOrder.completeDelivery();
+        this.deliveryOrderRepository.save(deliveryOrder);
+        return DeliveryOrderOutputDto.fromModel(deliveryOrder);
     }
 }

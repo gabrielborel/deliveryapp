@@ -36,4 +36,16 @@ public class CustomerOutputDto {
         customers.forEach(customer -> customersDto.add(fromModel(customer)));
         return customersDto;
     }
+
+    @Override
+    public String toString() {
+        return "Cliente {" +
+                "id=" + id +
+                "nome='" + name + '\'' +
+                ", endereço=" + address +
+                ", email='" + email + '\'' +
+                ", telefone='" + phoneNumber + '\'' +
+                '}';
+    }
+
 }

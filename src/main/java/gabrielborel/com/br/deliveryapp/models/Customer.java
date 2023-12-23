@@ -19,7 +19,8 @@ import java.util.List;
 @Entity
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_sequence")
+    @SequenceGenerator(name = "customer_sequence", sequenceName = "customer_sequence", allocationSize = 1)
     private int id;
 
     @Column
@@ -54,6 +55,10 @@ public class Customer {
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
+
+    public void addDeliveryOrder(DeliveryOrder deliveryOrder) {
+        this.deliveryOrders.add(deliveryOrder);
     }
 
     @Override

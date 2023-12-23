@@ -5,6 +5,7 @@ import gabrielborel.com.br.deliveryapp.models.Customer;
 import gabrielborel.com.br.deliveryapp.models.dtos.customer.CreateCustomerInputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.customer.CustomerOutputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.customer.UpdateCustomerInputDto;
+import gabrielborel.com.br.deliveryapp.models.dtos.deliveryorder.DeliveryOrderOutputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.seller.SellerOutputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.seller.UpdateSellerInputDto;
 import gabrielborel.com.br.deliveryapp.repositories.CustomerRepository;
@@ -21,7 +22,7 @@ public class CustomerService {
     private final AddressService addressService;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, AddressService addressService){
+    public CustomerService(CustomerRepository customerRepository, AddressService addressService) {
         this.customerRepository = customerRepository;
         this.addressService = addressService;
     }
@@ -63,6 +64,11 @@ public class CustomerService {
 
         customerRepository.save(customer);
         return CustomerOutputDto.fromModel(customer);
+    }
+
+    public List<DeliveryOrderOutputDto> getCustomerDeliveryOrders(int id) {
+        var customer = customerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("customer not found"));
+        return DeliveryOrderOutputDto.fromModelList(customer.getDeliveryOrders());
     }
 
     private void updateIfNotNull(String newValue, Consumer<String> updater) {

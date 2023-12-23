@@ -2,6 +2,7 @@ package gabrielborel.com.br.deliveryapp.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import gabrielborel.com.br.deliveryapp.models.Seller;
+import gabrielborel.com.br.deliveryapp.models.dtos.deliveryorder.DeliveryOrderOutputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.seller.CreateSellerInputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.seller.SellerOutputDto;
 import gabrielborel.com.br.deliveryapp.models.dtos.seller.UpdateSellerInputDto;
@@ -18,7 +19,10 @@ public class SellerService {
     private final AddressService addressService;
 
     @Autowired
-    public SellerService(SellerRepository sellerRepository, AddressService addressService) {
+    public SellerService(
+            SellerRepository sellerRepository,
+            AddressService addressService
+    ) {
         this.sellerRepository = sellerRepository;
         this.addressService = addressService;
     }
@@ -61,6 +65,11 @@ public class SellerService {
 
         sellerRepository.save(seller);
         return SellerOutputDto.fromModel(seller);
+    }
+
+    public List<DeliveryOrderOutputDto> getSellerDeliveryOrders(int id) {
+        var seller = sellerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("seller not found"));
+        return DeliveryOrderOutputDto.fromModelList(seller.getDeliveryOrders());
     }
 
     private void updateIfNotNull(String newValue, Consumer<String> updater) {
