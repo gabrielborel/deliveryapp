@@ -4,6 +4,10 @@ import gabrielborel.com.br.deliveryapp.models.Customer;
 import gabrielborel.com.br.deliveryapp.models.DeliveryOrder;
 import gabrielborel.com.br.deliveryapp.models.Deliveryman;
 import gabrielborel.com.br.deliveryapp.models.Seller;
+import gabrielborel.com.br.deliveryapp.models.dtos.customer.CustomerOutputDto;
+import gabrielborel.com.br.deliveryapp.models.dtos.deliveryman.DeliverymanOutputDto;
+import gabrielborel.com.br.deliveryapp.models.dtos.deliveryorder.CreateDeliveryOrderInputDto;
+import gabrielborel.com.br.deliveryapp.models.dtos.seller.SellerOutputDto;
 import gabrielborel.com.br.deliveryapp.services.CustomerService;
 import gabrielborel.com.br.deliveryapp.services.DeliveryOrderService;
 import gabrielborel.com.br.deliveryapp.services.DeliverymanService;
@@ -32,11 +36,15 @@ public class DeliveryOrderLoader {
         var sellers = sellerService.getSellers().toArray();
 
         for (var i = 0; i < 3; i++) {
-            var customer = (Customer) customers[i];
-            var deliveryman = (Deliveryman) deliverymen[i];
-            var seller = (Seller) sellers[i];
-            var deliveryOrder = new DeliveryOrder(seller, customer, deliveryman);
-            deliveryOrderService.createDeliveryOrder(deliveryOrder);
+            var customer = (CustomerOutputDto) customers[i];
+            var deliveryman = (DeliverymanOutputDto) deliverymen[i];
+            var seller = (SellerOutputDto) sellers[i];
+            var deliveryOrderInput = new CreateDeliveryOrderInputDto(
+                    seller.getId(),
+                    customer.getId(),
+                    deliveryman.getId()
+            );
+            deliveryOrderService.createDeliveryOrder(deliveryOrderInput);
         }
     }
 
